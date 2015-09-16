@@ -11,9 +11,9 @@ import (
 	"encoding/binary"
 	"errors"
 
-	"github.com/jonstout/ogo/protocol/eth"
-	"github.com/jonstout/ogo/protocol/ofpxx"
-	"github.com/jonstout/ogo/protocol/util"
+	"github.com/3d0c/ogo/protocol/eth"
+	"github.com/3d0c/ogo/protocol/ofpxx"
+	"github.com/3d0c/ogo/protocol/util"
 )
 
 const (
@@ -118,7 +118,11 @@ func (p *PacketOut) Len() (n uint16) {
 	for _, a := range p.Actions {
 		n += a.Len()
 	}
-	n += p.Data.Len()
+
+	if p.Data != nil {
+		n += p.Data.Len()
+	}
+
 	//if n < 72 { return 72 }
 	return
 }
@@ -146,9 +150,12 @@ func (p *PacketOut) MarshalBinary() (data []byte, err error) {
 		n += len(b)
 	}
 
-	b, err = p.Data.MarshalBinary()
-	copy(data[n:], b)
-	n += len(b)
+	if p.Data != nil {
+		b, err = p.Data.MarshalBinary()
+		copy(data[n:], b)
+		n += len(b)
+	}
+
 	return
 }
 

@@ -3,8 +3,8 @@ package ofp10
 import (
 	"encoding/binary"
 
-	"github.com/jonstout/ogo/protocol/ofpxx"
-	"github.com/jonstout/ogo/protocol/util"
+	"github.com/3d0c/ogo/protocol/ofpxx"
+	"github.com/3d0c/ogo/protocol/util"
 )
 
 // ofp_stats_request 1.0

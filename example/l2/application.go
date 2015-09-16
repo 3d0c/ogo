@@ -6,8 +6,8 @@ import (
 	"runtime"
 	"sync"	
 	
-	"github.com/jonstout/ogo"
-	"github.com/jonstout/ogo/protocol/ofp10"
+	"github.com/3d0c/ogo"
+	"github.com/3d0c/ogo/protocol/ofp10"
 )
 
 // Structure to track hosts that we discover.

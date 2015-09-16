@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"net"
 
-	"github.com/jonstout/ogo/protocol/ofpxx"
+	"github.com/3d0c/ogo/protocol/ofpxx"
 )
 
 type SwitchFeatures struct {

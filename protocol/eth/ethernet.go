@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net"
 
-	"github.com/jonstout/ogo/protocol/arp"
-	"github.com/jonstout/ogo/protocol/ipv4"
-	"github.com/jonstout/ogo/protocol/util"
+	"github.com/3d0c/ogo/protocol/arp"
+	"github.com/3d0c/ogo/protocol/ipv4"
+	"github.com/3d0c/ogo/protocol/util"
 )
 
 // see http://en.wikipedia.org/wiki/EtherType
@@ -61,6 +61,7 @@ func (e *Ethernet) MarshalBinary() (data []byte, err error) {
 	n := 0
 	copy(data[n:], e.HWDst)
 	n += len(e.HWDst)
+
 	copy(data[n:], e.HWSrc)
 	n += len(e.HWSrc)
 

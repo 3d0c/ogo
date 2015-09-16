@@ -2,8 +2,8 @@ package ogo
 
 import (
 	"encoding/binary"
-	"github.com/jonstout/ogo/protocol/ofp"
-	"github.com/jonstout/ogo/protocol/util"
+	"github.com/3d0c/ogo/protocol/ofp"
+	"github.com/3d0c/ogo/protocol/util"
 	"log"
 	"net"
 	"bytes"
