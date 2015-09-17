@@ -5,9 +5,9 @@ import (
 	"net"
 	"sync"
 
-	"github.com/jonstout/ogo/protocol/ofp10"
-	"github.com/jonstout/ogo/protocol/ofpxx"
-	"github.com/jonstout/ogo/protocol/util"
+	"github.com/3d0c/ogo/protocol/ofp10"
+	"github.com/3d0c/ogo/protocol/ofpxx"
+	"github.com/3d0c/ogo/protocol/util"
 )
 
 // A map from DPIDs to all Switches that have connected since

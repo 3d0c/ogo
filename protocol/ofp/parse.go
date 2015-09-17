@@ -1,9 +1,9 @@
 package ofp
 
 import (
-	"github.com/jonstout/ogo/protocol/ofp10"
-	"github.com/jonstout/ogo/protocol/ofp13"
-	"github.com/jonstout/ogo/protocol/util"
+	"github.com/3d0c/ogo/protocol/ofp10"
+	"github.com/3d0c/ogo/protocol/ofp13"
+	"github.com/3d0c/ogo/protocol/util"
 )
 
 func Parse(b []byte) (message util.Message, err error) {

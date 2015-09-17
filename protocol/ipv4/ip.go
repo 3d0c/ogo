@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net"
 
-	"github.com/jonstout/ogo/protocol/icmp"
-	"github.com/jonstout/ogo/protocol/udp"
-	"github.com/jonstout/ogo/protocol/util"
+	"github.com/3d0c/ogo/protocol/icmp"
+	"github.com/3d0c/ogo/protocol/udp"
+	"github.com/3d0c/ogo/protocol/util"
 )
 
 const (

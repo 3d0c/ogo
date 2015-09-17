@@ -3,7 +3,7 @@ package ofp10
 import (
 	"encoding/binary"
 
-	"github.com/jonstout/ogo/protocol/ofpxx"
+	"github.com/3d0c/ogo/protocol/ofpxx"
 )
 
 // ofp_flow_mod
@@ -60,9 +60,10 @@ func (f *FlowMod) Len() (n uint16) {
 func (f *FlowMod) MarshalBinary() (data []byte, err error) {
 	f.Header.Length = f.Len()
 	data, err = f.Header.MarshalBinary()
-	bytes, err := f.Match.MarshalBinary()
-	data = append(data, bytes...)
 
+	bytes, err := f.Match.MarshalBinary()
+
+	data = append(data, bytes...)
 	bytes = make([]byte, 24)
 	n := 0
 	binary.BigEndian.PutUint64(bytes[n:], f.Cookie)

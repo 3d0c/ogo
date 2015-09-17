@@ -5,7 +5,7 @@ import (
 	"encoding/binary"
 	"errors"
 
-	"github.com/jonstout/ogo/protocol/util"
+	"github.com/3d0c/ogo/protocol/util"
 )
 
 // Returns a new OpenFlow header with version field set to v1.0.

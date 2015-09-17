@@ -1,8 +1,8 @@
 package ogo
 
 import (
-	"github.com/jonstout/ogo/protocol/ofpxx"
-	"github.com/jonstout/ogo/protocol/ofp10"
+	"github.com/3d0c/ogo/protocol/ofpxx"
+	"github.com/3d0c/ogo/protocol/ofp10"
 	"log"
 	"net"
 	"time"
