@@ -60,9 +60,10 @@ func (f *FlowMod) Len() (n uint16) {
 func (f *FlowMod) MarshalBinary() (data []byte, err error) {
 	f.Header.Length = f.Len()
 	data, err = f.Header.MarshalBinary()
-	bytes, err := f.Match.MarshalBinary()
-	data = append(data, bytes...)
 
+	bytes, err := f.Match.MarshalBinary()
+
+	data = append(data, bytes...)
 	bytes = make([]byte, 24)
 	n := 0
 	binary.BigEndian.PutUint64(bytes[n:], f.Cookie)
@@ -87,7 +88,6 @@ func (f *FlowMod) MarshalBinary() (data []byte, err error) {
 		bytes, err = a.MarshalBinary()
 		data = append(data, bytes...)
 	}
-
 	return
 }
 

@@ -66,10 +66,13 @@ func (m *Match) MarshalBinary() (data []byte, err error) {
 	n += 1
 	copy(data[n:], m.pad2)
 	n += len(m.pad2)
-	copy(data[n:], m.NWSrc)
+
+	copy(data[n:], m.NWSrc.To4())
 	n += len(m.NWSrc)
-	copy(data[n:], m.NWDst)
+
+	copy(data[n:], m.NWDst.To4())
 	n += len(m.NWDst)
+
 	binary.BigEndian.PutUint16(data[n:], m.TPSrc)
 	n += 2
 	binary.BigEndian.PutUint16(data[n:], m.TPDst)
