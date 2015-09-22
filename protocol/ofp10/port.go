@@ -1,7 +1,9 @@
 package ofp10
 
 import (
+	"bytes"
 	"encoding/binary"
+	"encoding/json"
 	"net"
 
 	"github.com/3d0c/ogo/protocol/ofpxx"
@@ -36,16 +38,43 @@ func (p *PhyPort) Len() (n uint16) {
 	return
 }
 
+func (p *PhyPort) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		PortNo uint16
+		HWAddr string
+		Name   string
+
+		Config uint32
+		State  uint32
+
+		Curr       uint32
+		Advertised uint32
+		Supported  uint32
+		Peer       uint32
+	}{
+		PortNo:     p.PortNo,
+		HWAddr:     p.HWAddr.String(),
+		Name:       string(p.Name[:bytes.IndexByte(p.Name, 0)]),
+		Config:     p.Config,
+		State:      p.State,
+		Curr:       p.Curr,
+		Advertised: p.Advertised,
+		Supported:  p.Supported,
+		Peer:       p.Peer,
+	})
+
+}
+
 func (p *PhyPort) MarshalBinary() (data []byte, err error) {
 	data = make([]byte, int(p.Len()))
 	binary.BigEndian.PutUint16(data, p.PortNo)
 	n := 2
-	
+
 	copy(data[n:], p.HWAddr)
 	n += len(p.HWAddr)
 	copy(data[n:], p.Name)
 	n += len(p.Name)
-	
+
 	binary.BigEndian.PutUint32(data[n:], p.Config)
 	n += 4
 	binary.BigEndian.PutUint32(data[n:], p.State)
@@ -150,7 +179,6 @@ func (p *PortMod) UnmarshalBinary(data []byte) error {
 	n += len(p.pad)
 	return err
 }
-
 
 const (
 	ETH_ALEN          = 6

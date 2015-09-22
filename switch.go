@@ -1,6 +1,7 @@
 package ogo
 
 import (
+	"encoding/json"
 	"log"
 	"net"
 	"sync"
@@ -74,6 +75,18 @@ func (sw *OFSwitch) SetPort(portNo uint16, port ofp10.PhyPort) {
 	sw.portsMu.Lock()
 	defer sw.portsMu.Unlock()
 	sw.ports[portNo] = port
+}
+
+func (sw *OFSwitch) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		Dpid  string
+		Ports []ofp10.PhyPort
+		Links []Link
+	}{
+		Dpid:  sw.DPID().String(),
+		Ports: sw.Ports(),
+		Links: sw.Links(),
+	})
 }
 
 // Returns a pointer to the Switch mapped to dpid.
@@ -205,7 +218,7 @@ func (s *OFSwitch) distributeMessages(dpid net.HardwareAddr, msg util.Message) {
 			case ofp10.Type_EchoRequest:
 				if actor, ok := app.(ofp10.EchoRequestReactor); ok {
 					actor.EchoRequest(s.DPID())
-				}	
+				}
 			case ofp10.Type_EchoReply:
 				if actor, ok := app.(ofp10.EchoReplyReactor); ok {
 					actor.EchoReply(s.DPID())

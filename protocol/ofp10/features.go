@@ -9,10 +9,10 @@ import (
 
 type SwitchFeatures struct {
 	ofpxx.Header
-	DPID net.HardwareAddr // Size 8
-	Buffers uint32
-	Tables  uint8
-	pad     []uint8 // Size 3
+	DPID         net.HardwareAddr // Size 8
+	Buffers      uint32
+	Tables       uint8
+	pad          []uint8 // Size 3
 	Capabilities uint32
 	Actions      uint32
 
@@ -81,7 +81,7 @@ func (s *SwitchFeatures) MarshalBinary() (data []byte, err error) {
 func (s *SwitchFeatures) UnmarshalBinary(data []byte) error {
 	var err error
 	next := 0
-	
+
 	err = s.Header.UnmarshalBinary(data[next:])
 	next = int(s.Header.Len())
 	copy(s.DPID, data[next:])
@@ -101,6 +101,7 @@ func (s *SwitchFeatures) UnmarshalBinary(data []byte) error {
 		p := NewPhyPort()
 		err = p.UnmarshalBinary(data[next:])
 		next += int(p.Len())
+		s.Ports = append(s.Ports, *p)
 	}
 	return err
 }
