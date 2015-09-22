@@ -2,6 +2,8 @@ package ofp10
 
 import (
 	"encoding/binary"
+	"encoding/json"
+	"strconv"
 
 	"github.com/3d0c/ogo/protocol/ofpxx"
 )
@@ -40,6 +42,122 @@ func NewFlowMod() *FlowMod {
 	f.Flags = 0
 	f.Actions = make([]Action, 0)
 	return f
+}
+
+func (f *FlowMod) UnmarshalJSON(b []byte) error {
+	type act struct {
+		Type  string
+		Value string
+	}
+
+	type tmp struct {
+		Match   *Match
+		Actions []act
+	}
+
+	s := tmp{}
+
+	f.Header = ofpxx.NewOfp10Header()
+	f.Header.Type = Type_FlowMod
+	f.Match = *NewMatch()
+	f.Cookie = 0
+	f.Command = FC_ADD
+	f.IdleTimeout = 0
+	f.HardTimeout = 0
+	f.Priority = 1000
+	f.BufferId = 0xffffffff
+	f.OutPort = P_NONE
+	f.Flags = FC_ADD
+	f.Actions = make([]Action, 0)
+
+	if err := json.Unmarshal(b, &s); err != nil {
+		return err
+	}
+
+	if s.Match != nil {
+		f.Match = *s.Match
+	}
+
+	// f.Match.Wildcards = FW_ALL ^ FW_DL_SRC ^ FW_DL_DST
+
+	if f.Match.InPort != 0 {
+		f.Match.Wildcards = f.Match.Wildcards ^ FW_IN_PORT
+	}
+
+	if f.Match.DLSrc.String() != "00:00:00:00:00:00" {
+		f.Match.Wildcards = f.Match.Wildcards ^ FW_DL_SRC
+	}
+
+	if f.Match.DLDst.String() != "00:00:00:00:00:00" {
+		f.Match.Wildcards = f.Match.Wildcards ^ FW_DL_DST
+	}
+
+	if f.Match.DLVLAN != 0 {
+		f.Match.Wildcards = f.Match.Wildcards ^ FW_DL_VLAN
+	}
+
+	if f.Match.DLVLANPcp != 0 {
+		f.Match.Wildcards = f.Match.Wildcards ^ FW_DL_VLAN_PCP
+	}
+
+	if f.Match.DLType != 0 {
+		f.Match.Wildcards = f.Match.Wildcards ^ FW_DL_TYPE
+	}
+
+	if f.Match.NWTos != 0 {
+		f.Match.Wildcards = f.Match.Wildcards ^ FW_NW_TOS
+	}
+
+	if f.Match.NWProto != 0 {
+		f.Match.Wildcards = f.Match.Wildcards ^ FW_NW_PROTO
+	}
+
+	if f.Match.NWSrc.String() != "0.0.0.0" {
+		f.Match.Wildcards = f.Match.Wildcards ^ FW_NW_SRC_MASK
+	}
+
+	if f.Match.NWDst.String() != "0.0.0.0" {
+		f.Match.Wildcards = f.Match.Wildcards ^ FW_NW_DST_MASK
+	}
+
+	if f.Match.TPSrc != 0 {
+		f.Match.Wildcards = f.Match.Wildcards ^ FW_TP_SRC
+	}
+
+	if f.Match.TPDst != 0 {
+		f.Match.Wildcards = f.Match.Wildcards ^ FW_TP_DST
+	}
+
+	strPorts := map[string]uint16{
+		"P_MAX":        P_MAX,
+		"P_IN_PORT":    P_IN_PORT,
+		"P_TABLE":      P_TABLE,
+		"P_NORMAL":     P_NORMAL,
+		"P_FLOOD":      P_FLOOD,
+		"P_ALL":        P_ALL,
+		"P_CONTROLLER": P_CONTROLLER,
+		"P_LOCAL":      P_LOCAL,
+		"P_NONE":       P_NONE,
+	}
+
+	for _, a := range s.Actions {
+		switch a.Type {
+		case "OFPAT_OUTPUT":
+			v, found := strPorts[a.Value]
+			if !found {
+				i, err := strconv.Atoi(a.Value)
+				if err != nil {
+					return err
+				}
+
+				v = uint16(i)
+			}
+
+			f.AddAction(NewActionOutput(v))
+		}
+	}
+
+	return nil
 }
 
 func (f *FlowMod) AddAction(a Action) {

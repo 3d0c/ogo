@@ -2,6 +2,7 @@ package ofp10
 
 import (
 	"encoding/binary"
+	"encoding/json"
 	"net"
 )
 
@@ -9,8 +10,8 @@ import (
 type Match struct {
 	Wildcards uint32           /* Wildcard fields. */
 	InPort    uint16           /* Input switch port. */
-	DLSrc     net.HardwareAddr //[ETH_ALEN]uint8 /* Ethernet source address. */
-	DLDst     net.HardwareAddr //[ETH_ALEN]uint8 /* Ethernet destination address. */
+	DLSrc     net.HardwareAddr `json:"-"`   //[ETH_ALEN]uint8 /* Ethernet source address. */
+	DLDst     net.HardwareAddr `json:"-"  ` //[ETH_ALEN]uint8 /* Ethernet destination address. */
 	DLVLAN    uint16           /* Input VLAN id. */
 	DLVLANPcp uint8            /* Input VLAN priority. */
 	pad       []uint8          /* Align to 64-bits Size 1 */
@@ -18,8 +19,8 @@ type Match struct {
 	NWTos     uint8            /* IP ToS (actually DSCP field, 6 bits). */
 	NWProto   uint8            /* IP protocol or lower 8 bits of ARP opcode. */
 	pad2      []uint8          /* Align to 64-bits Size 2 */
-	NWSrc     net.IP           /* IP source address. */
-	NWDst     net.IP           /* IP destination address. */
+	NWSrc     net.IP           `json:"-"` /* IP source address. */
+	NWDst     net.IP           `json:"-"` /* IP destination address. */
 	TPSrc     uint16           /* TCP/UDP source port. */
 	TPDst     uint16           /* TCP/UDP destination port. */
 }
@@ -35,6 +36,49 @@ func NewMatch() *Match {
 	m.pad = make([]byte, 1)
 	m.pad2 = make([]byte, 2)
 	return m
+}
+
+func (m *Match) UnmarshalJSON(b []byte) error {
+	var err error
+
+	type Tmp Match
+	type payload struct {
+		*Tmp
+		DLSrcStr string `json:"DLSrc"`
+		DLDstStr string `json:"DLDst"`
+		NWSrcStr string `json:"NWSrc"`
+		NWDstStr string `json:"NWDst"`
+	}
+
+	p := payload{Tmp: (*Tmp)(NewMatch())}
+
+	if err = json.Unmarshal(b, &p); err != nil {
+		return err
+	}
+
+	if p.DLSrcStr != "" {
+		if p.Tmp.DLSrc, err = net.ParseMAC(p.DLSrcStr); err != nil {
+			return err
+		}
+	}
+
+	if p.DLDstStr != "" {
+		if p.Tmp.DLDst, err = net.ParseMAC(p.DLDstStr); err != nil {
+			return err
+		}
+	}
+
+	if p.NWSrcStr != "" {
+		p.Tmp.NWSrc = net.ParseIP(p.NWSrcStr).To4()
+	}
+
+	if p.NWDstStr != "" {
+		p.Tmp.NWDst = net.ParseIP(p.NWDstStr).To4()
+	}
+
+	*m = *(*Match)(p.Tmp)
+
+	return nil
 }
 
 func (m *Match) Len() (n uint16) {
