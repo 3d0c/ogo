@@ -1,6 +1,6 @@
-[![Build Status](https://drone.io/github.com/jonstout/ogo/status.png)](https://drone.io/github.com/jonstout/ogo/latest) [![GoDoc](https://godoc.org/github.com/jonstout/ogo?status.png)](https://godoc.org/github.com/jonstout/ogo)
 # Ogo
-An OpenFlow Network Controller written in Go.
+An OpenFlow Network Controller written in Go.  
+This repo has some hot fixes and also ability to work with JSON configs.  
 
 ## A Basic Application
 ### Register
